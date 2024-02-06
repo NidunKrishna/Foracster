@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prophet Forecast</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+        }
+        selector {
+    font-size: 36px;
+    color: #fff; 
+    text-shadow: 0 0 10px #00f, 0 0 20px #00f, 0 0 30px #00f, 0 0 40px #00f, 0 0 50px #00f, 0 0 60px #00f, 0 0 70px #00f, 0 0 80px #00f;
+}
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* .chat-box {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+            margin: 10px;
+        } */
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button {
+            background-color: #7be8dd;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* h1 {
+            color: #59c6de;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(100, 227, 238, 0.7);
+            padding: 50px;
+        } */
+        @keyframes textGlow {
+            0% {
+                text-shadow: 0 0 10px rgb(109, 199, 218);
+            }
+            50% {
+                text-shadow: 0 0 20px rgb(253, 255, 255);
+            }
+            100% {
+                text-shadow: 0 0 10px rgb(111, 255, 250);
+            }
+        }
+
+        .glowing-text {
+            font-size: 24px;
+            color: rgb(134, 204, 234);
+            animation: textGlow 2s infinite;
+            color: #59c6de;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(209, 234, 236, 0.7);
+            padding: 10px;
+            font-size: 50px;
+            text-align: center;
+        }
+        h2{
+            color: #59c6de;
+            margin-top: 20px; 
+        }
+        
+
+        
+        .text-transition {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s, transform 1s;
+        }
+
+        .text-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+            .ball {
+    width: 50px;
+    height: 50px;
+    background-color: #3498db;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-100vh);
+    }
+}
+        
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1 class="glowing-text">Pickpal</h1>
+        <div class="ball"></div>
+    <div class="container">
+        
+        <div class="chat-box">
+            <div id="forecast_plot_prophet">
+                
+            </div>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="getUpdate()">Update Prophet Forecast</button>
+        </div>
+        <div class="chat-box">
+            <h2>Saturated Minimum Forecast</h2>
+            <div id="forecast_plot_saturated_min">
+                
+            </div>
+        </div>
+        <div class="chat-box">
+            <h2>Saturated Maximum Forecast</h2>
+            <div id="forecast_plot_saturated_max">
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function getUpdate() {
+            socket.emit('get_update');
+        }
+
+        socket.on('update', function(data) {
+            $("#forecast_plot_prophet").html('<img src="data:image/png;base64,' + data.plot_data_prophet + '" alt="Prophet Forecast Plot">');
+            $("#forecast_plot_saturated_min").html('<img src="data:image/png;base64,' + data.plot_data_saturated_min + '" alt="Saturated Minimum Forecast Plot">');
+            $("#forecast_plot_saturated_max").html('<img src="data:image/png;base64,' + data.plot_data_saturated_max + '" alt="Saturated Maximum Forecast Plot">');
+        });
+    </script>
+</body>
+</html>
